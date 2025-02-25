@@ -1,10 +1,20 @@
+#ifdef ESP32
 #include "logwifi.h"
 #include <Preferences.h>
 #include "ESPAsyncWebServer.h"
 #include <Arduino_JSON.h>              //Biblioteca para Fazer os Arquivos JSON       https://github.com/arduino-libraries/Arduino_JSON
 #include <AsyncTCP.h>  //6.19.4
 #include <WiFi.h>
-
+#endif
+#ifdef ESP8266  
+#include "logwifi.h"  
+#include <ESPAsyncTCP.h> // Diferente do ESP32  
+#include <ESPAsyncWebServer.h>  
+#include <Arduino_JSON.h> // Biblioteca para Fazer os Arquivos JSON  
+#include <WiFiClient.h>
+#include <ESP8266WiFi.h> 
+#include <Preferences.h>
+#endif
 Preferences preferences;
 AsyncWebServer server(80);
 JSONVar board;
@@ -164,31 +174,6 @@ void logwifi::loop(){
       ESP.restart();
 
     }
-    }
 
-  if (WiFi.status() != WL_CONNECTED) {
-  digitalWrite(LED,0);
-  const String ssidString = preferences.getString("ssid", "");
-  const String passwordString = preferences.getString("password", "");  
-  WiFi.begin(ssidString.c_str(),passwordString.c_str()); // Conecta na rede WI-FI
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 40) {
-    delay(100);
-    Serial.print(".");
-    attempts++;
-    if (attempts == 30){
-      WiFi.begin(ssidString.c_str(),passwordString.c_str());
-    }
-    digitalWrite(LED,0);
-    delay(150);
-    digitalWrite(LED,1);
-    delay(150);
-  }
-  if (attempts == 40) {
-    Serial.println("Falha ao conectar à rede Wi-Fi após várias tentativas.");
-    ESP.restart();
-  } else {
-  digitalWrite(LED,1);
-  }
-  }
+}
 }
